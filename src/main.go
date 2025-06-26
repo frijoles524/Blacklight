@@ -17,7 +17,7 @@ func downloadRuntime() error {
 		repoZipURL     = "https://codeload.github.com/frijoles524/Blacklight/zip/refs/heads/master"
 		tempZipPath    = "temp_repo.zip"
 		tempExtractDir = "temp_repo"
-		runtimeSubDir  = "src/pkg/python312runtime"
+		runtimeSubDir  = "Blacklight-master/src/pkg/python312runtime"
 		destDir        = "python312runtime"
 	)
 	if _, err := os.Stat(destDir); err == nil {
@@ -34,20 +34,17 @@ func downloadRuntime() error {
 	if err != nil {
 		return fmt.Errorf("failed to create temp zip: %w", err)
 	}
+	defer os.Remove(tempZipPath)
 	defer out.Close()
 	io.Copy(out, resp.Body)
 	if err := unzip(tempZipPath, tempExtractDir); err != nil {
 		return fmt.Errorf("failed to unzip repo: %w", err)
 	}
+	defer os.RemoveAll(tempExtractDir)
 	srcRuntimePath := filepath.Join(tempExtractDir, runtimeSubDir)
-	if err := os.RemoveAll(destDir); err != nil {
-		return fmt.Errorf("failed to clear existing runtime: %w", err)
-	}
 	if err := os.Rename(srcRuntimePath, destDir); err != nil {
 		return fmt.Errorf("failed to move runtime folder: %w", err)
 	}
-	os.RemoveAll(tempZipPath)
-	os.RemoveAll(tempExtractDir)
 	return nil
 }
 func unzip(src, dest string) error {
