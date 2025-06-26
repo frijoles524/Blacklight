@@ -13,15 +13,15 @@ import (
 	"unsafe"
 )
 
-func initPython() {
+func InitPython() {
 	C.Py_Initialize()
 }
 
-func shutdownPython() {
+func ShutdownPython() {
 	C.Py_Finalize()
 }
 
-func runString(code string) error {
+func RunString(code string) error {
 	cCode := C.CString(code)
 	defer C.free(unsafe.Pointer(cCode))
 
@@ -33,7 +33,7 @@ func runString(code string) error {
 	return nil
 }
 
-func runFile(filename string) error {
+func RunFile(filename string) error {
 	cFilename := C.CString(filename)
 	defer C.free(unsafe.Pointer(cFilename))
 
