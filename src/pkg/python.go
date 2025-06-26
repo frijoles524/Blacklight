@@ -1,15 +1,10 @@
-package main
+package pkg
 
 /*
 #cgo LDFLAGS: -L./python312runtime -lpython312
 #include <stdlib.h>
 #include <stdio.h>
-
-extern void Py_Initialize(void);
-extern void Py_Finalize(void);
-extern int PyRun_SimpleString(const char *command);
-extern int PyRun_SimpleFile(FILE *fp, const char *filename);
-extern void PyErr_Print(void);
+#include <Python.h>
 */
 import "C"
 
@@ -17,6 +12,14 @@ import (
 	"fmt"
 	"unsafe"
 )
+
+func initPython() {
+	C.Py_Initialize()
+}
+
+func shutdownPython() {
+	C.Py_Finalize()
+}
 
 func runString(code string) error {
 	cCode := C.CString(code)
@@ -34,7 +37,10 @@ func runFile(filename string) error {
 	cFilename := C.CString(filename)
 	defer C.free(unsafe.Pointer(cFilename))
 
-	file := C.fopen(cFilename, C.CString("r"))
+	cMode := C.CString("r")
+	defer C.free(unsafe.Pointer(cMode))
+
+	file := C.fopen(cFilename, cMode)
 	if file == nil {
 		return fmt.Errorf("unable to open file: %s", filename)
 	}

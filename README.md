@@ -1,0 +1,1 @@
+This project aims to facilitate management, downloading, running and optimizing of Ravendevteam's free software. I'm aware of the plans to make their own software manager and optimizations, but as it's still in development I've decided to make this project.
