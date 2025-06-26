@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	command  = flag.String("command", "help", "command to run, leave empty for help")
+	command  = flag.String("command", "", "command to run")
 	software = flag.String("software", "", "name of the software to perform the action on. not needed for every command")
 )
 
