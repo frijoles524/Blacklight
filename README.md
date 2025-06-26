@@ -6,3 +6,6 @@ This project aims to facilitate management, downloading, running and optimizing 
 - Add the executable to path
 - Run the program as administrator once to ensure correct permissions while updating and fetching runtime
 - You can now use blacklight. Run blacklight help for details
+# More information
+- Why the need for a runtime? Blacklight comes with a lightweight python runtime, required to run raven software from source code. By default their software is compiled with nuitka, which really slows down the startup time and sets off antiviruses because it has to write to the disk. Blacklight can run raven software more efficiently through the use of this runtime.
+- Upcoming features. These include a more native experience for running apps (with the help of start menu items and shortcuts), more functionality and other cool features.
