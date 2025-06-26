@@ -10,27 +10,29 @@ func RunApp() {
 	pkg.InitPython()
 	defer pkg.ShutdownPython()
 
-	if *software == "" {
+	if software == nil || *software == "" {
 		fmt.Println("No software name was passed.")
 		return
 	}
 
-	version := *version
-	if version == "" {
+	var versionStr string
+	if version == nil || *version == "" {
 		var err error
-		version, err = pkg.GetHighestVersion(*software)
+		versionStr, err = pkg.GetHighestVersion(*software)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+	} else {
+		versionStr = *version
 	}
 
-	if !pkg.IsInstalled(&pkg.Package{Name: *software, Version: version}) {
-		fmt.Printf("Software %s version %s is not installed.\n", *software, version)
+	if !pkg.IsInstalled(&pkg.Package{Name: *software, Version: versionStr}) {
+		fmt.Printf("Software %s version %s is not installed.\n", *software, versionStr)
 		return
 	}
 
-	err := pkg.RunFile(fmt.Sprintf("%s-%s", *software, version))
+	err := pkg.RunFile(fmt.Sprintf("%s-%s", *software, versionStr))
 	if err != nil {
 		fmt.Printf("Error running software: %v\n", err)
 	}

@@ -82,7 +82,7 @@ func unzip(src, dest string) error {
 }
 
 func main() {
-	ParseFlags()
+	ParseArgs()
 	if err := downloadRuntime(); err != nil {
 		panic(err)
 	}
