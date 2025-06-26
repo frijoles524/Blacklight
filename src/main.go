@@ -8,8 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/frijoles524/Blacklight/pkg"
 )
 
 func downloadRuntime() error {
@@ -85,7 +83,6 @@ func unzip(src, dest string) error {
 
 func main() {
 	ParseFlags()
-	pkg.FetchPackageList()
 	if err := downloadRuntime(); err != nil {
 		panic(err)
 	}
