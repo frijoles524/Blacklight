@@ -106,6 +106,11 @@ func unzip(src, dest string) error {
 }
 
 func main() {
+	if pkg.ContainsGuiFlag(os.Args) {
+		if err := pkg.DetachConsole(); err != nil {
+			panic(err)
+		}
+	}
 	initPythonAsync()
 	exePath, err := os.Executable()
 	if err != nil {

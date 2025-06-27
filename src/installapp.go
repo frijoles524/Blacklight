@@ -20,6 +20,7 @@ func InstallApp() {
 		p.Version = *version
 	}
 
+	<-pythonInitDone
 	if err := pkg.Download(p); err != nil {
 		fmt.Println("Failed to install:", err)
 	}

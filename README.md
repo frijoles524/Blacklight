@@ -10,8 +10,3 @@ This project aims to facilitate management, downloading and running of Ravendevt
 - How do I run apps more natively? Run your desired app through the cli, and pin it to start menu.
 - Why the need for a runtime? Blacklight comes with a lightweight python runtime, required to run raven software from source code. By default their software is compiled with nuitka, which really slows down the startup time and sets off antiviruses because it has to write to the disk. Blacklight can run raven software more smoothly through the use of this runtime.
 - Upcoming features. These include more functionality and other cool features.
-# How to build
-change directory to src:
-cd src
-build blacklight:
-go build -ldflags="-H=windowsgui"
