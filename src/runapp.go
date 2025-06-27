@@ -32,7 +32,7 @@ func RunApp() {
 		return
 	}
 
-	err := pkg.RunFile(fmt.Sprintf("%s-%s", *software, versionStr))
+	err := pkg.RunFile(fmt.Sprintf("%s-%s/%s.py", *software, versionStr, *software))
 	if err != nil {
 		fmt.Printf("Error running software: %v\n", err)
 	}

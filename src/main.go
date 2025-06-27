@@ -8,7 +8,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/frijoles524/Blacklight/pkg"
 )
+
+func resetRuntime() {
+	err := os.RemoveAll("python312runtime")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Runtime deleted. Downloading latest runtime")
+	downloadRuntime()
+	fmt.Println("Downloaded.")
+	os.Exit(0)
+}
 
 func downloadRuntime() error {
 	const (
@@ -82,12 +95,29 @@ func unzip(src, dest string) error {
 }
 
 func main() {
+	exePath, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exeDir := filepath.Dir(exePath)
+	if err := os.Chdir(exeDir); err != nil {
+		panic(err)
+	}
+	pkg.LoadCache()
 	ParseArgs()
 	if err := downloadRuntime(); err != nil {
 		panic(err)
 	}
 	switch *command {
+	case "dev-runstring":
+		if err := pkg.RunString(*version); err != nil {
+			fmt.Println(err)
+		}
+	case "reset-runtime":
+		resetRuntime()
 	case "run":
 		RunApp()
+	case "install":
+		InstallApp()
 	}
 }

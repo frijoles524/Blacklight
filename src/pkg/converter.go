@@ -21,7 +21,7 @@ type Package struct {
 
 const cacheFile = "installed_cache.json"
 
-var cache = map[string]Package{}
+var cache = map[string][]Package{}
 
 func LoadCache() {
 	file, err := os.Open(cacheFile)
@@ -47,18 +47,46 @@ func saveCache() {
 }
 
 func IsInstalled(p *Package) bool {
-	if cached, ok := cache[p.Name]; ok {
+	if versions, ok := cache[p.Name]; ok {
 		if p.Version == "" {
 			return true
 		}
-		return cached.Version == p.Version
+		targetVersion := strings.TrimPrefix(p.Version, "v")
+		for _, cached := range versions {
+			if strings.TrimPrefix(cached.Version, "v") == targetVersion {
+				return true
+			}
+		}
 	}
 	return false
 }
 
 func Download(p *Package) error {
+	if p.Version == "" {
+		fmt.Printf("No version specified for %s. Fetching latest version...\n", p.Name)
+		apiURL := fmt.Sprintf("https://api.github.com/repos/ravendevteam/%s/releases/latest", p.Name)
+		resp, err := http.Get(apiURL)
+		if err != nil {
+			return fmt.Errorf("failed to fetch latest release info: %w", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("GitHub API responded with status %d", resp.StatusCode)
+		}
+
+		var result struct {
+			TagName string `json:"tag_name"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			return fmt.Errorf("failed to decode GitHub API response: %w", err)
+		}
+
+		p.Version = result.TagName
+	}
+
 	if IsInstalled(p) {
-		fmt.Printf("Package %s@%s is already installed.\n", p.Name, p.Version)
+		fmt.Printf("Package %s@%s is already installed.\n", p.Name, strings.TrimPrefix(p.Version, "v"))
 		return nil
 	}
 
@@ -70,6 +98,7 @@ func Download(p *Package) error {
 		return fmt.Errorf("failed to download repo: %w", err)
 	}
 	defer resp.Body.Close()
+	p.Version = strings.TrimPrefix(p.Version, "v")
 
 	out, err := os.Create(tempZip)
 	if err != nil {
@@ -125,52 +154,29 @@ func Download(p *Package) error {
 		outFile.Close()
 		in.Close()
 	}
-	CleanDirectory(fmt.Sprintf("%s-%s", p.Name, p.Version), []string{fmt.Sprintf("%s.py", p.Name), fmt.Sprintf("%s.png", p.Name), "style.css", "requirements.txt", "ICON.ico"})
-	cache[p.Name] = *p
-	saveCache()
+
+	p.Version = strings.TrimPrefix(p.Version, "v")
+	versions := cache[p.Name]
+	found := false
+	for _, v := range versions {
+		if strings.TrimPrefix(v.Version, "v") == p.Version {
+			found = true
+			break
+		}
+	}
+	if !found {
+		cache[p.Name] = append(cache[p.Name], *p)
+		saveCache()
+	}
+
 	fmt.Printf("Package %s@%s installed.\n", p.Name, p.Version)
 	return nil
 }
 
-func CleanDirectory(dir string, keepFiles []string) error {
-	keepMap := make(map[string]bool)
-	for _, f := range keepFiles {
-		keepMap[f] = true
-	}
-
-	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if path == dir {
-			return nil
-		}
-
-		if keepMap[info.Name()] {
-			return nil
-		}
-
-		if info.IsDir() {
-			if err := os.RemoveAll(path); err != nil {
-				return fmt.Errorf("failed to remove directory %s: %w", path, err)
-			}
-			return filepath.SkipDir
-		} else {
-			if err := os.Remove(path); err != nil {
-				return fmt.Errorf("failed to remove file %s: %w", path, err)
-			}
-		}
-		return nil
-	})
-}
-
 func GetInstalledVersions(name string) []string {
 	var versions []string
-	for _, p := range cache {
-		if p.Name == name {
-			versions = append(versions, p.Version)
-		}
+	for _, p := range cache[name] {
+		versions = append(versions, strings.TrimPrefix(p.Version, "v"))
 	}
 	return versions
 }
@@ -210,10 +216,8 @@ func GetHighestVersion(name string) (string, error) {
 	if len(versions) == 0 {
 		return "", fmt.Errorf("no installed versions for %s", name)
 	}
-
 	sort.Slice(versions, func(i, j int) bool {
 		return semVerLess(versions[i], versions[j])
 	})
-
 	return versions[len(versions)-1], nil
 }
