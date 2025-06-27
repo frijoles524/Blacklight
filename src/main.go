@@ -8,9 +8,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/frijoles524/Blacklight/pkg"
 )
+
+var pythonReady sync.Once
+var pythonInitDone = make(chan struct{})
+
+func initPythonAsync() {
+	go func() {
+		pkg.InitPython()
+		close(pythonInitDone)
+	}()
+}
 
 func resetRuntime() {
 	err := os.RemoveAll("python312runtime")
@@ -95,6 +106,7 @@ func unzip(src, dest string) error {
 }
 
 func main() {
+	initPythonAsync()
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -111,7 +123,6 @@ func main() {
 	switch *command {
 	case "dev-runstring":
 		if software != nil {
-			pkg.InitPython()
 			if err := pkg.RunString(*software); err != nil {
 				fmt.Println(err)
 				pkg.ShutdownPython()

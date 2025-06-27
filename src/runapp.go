@@ -7,7 +7,7 @@ import (
 )
 
 func RunApp() {
-	pkg.InitPython()
+	//pkg.InitPython()
 	defer pkg.ShutdownPython()
 
 	if software == nil || *software == "" {
@@ -32,6 +32,7 @@ func RunApp() {
 		return
 	}
 
+	<-pythonInitDone
 	err := pkg.RunFile(fmt.Sprintf("%s-%s/%s.py", *software, versionStr, *software))
 	if err != nil {
 		fmt.Printf("Error running software: %v\n", err)
