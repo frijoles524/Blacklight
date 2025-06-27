@@ -110,8 +110,15 @@ func main() {
 	}
 	switch *command {
 	case "dev-runstring":
-		if err := pkg.RunString(*version); err != nil {
-			fmt.Println(err)
+		if software != nil {
+			pkg.InitPython()
+			if err := pkg.RunString(*software); err != nil {
+				fmt.Println(err)
+				pkg.ShutdownPython()
+			}
+			pkg.ShutdownPython()
+		} else {
+			fmt.Println("No code was passed")
 		}
 	case "reset-runtime":
 		resetRuntime()

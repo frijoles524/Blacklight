@@ -26,6 +26,7 @@ func RunString(code string) error {
 	defer C.free(unsafe.Pointer(cCode))
 
 	ret := C.PyRun_SimpleString(cCode)
+	C.fflush(C.stdout)
 	if ret != 0 {
 		C.PyErr_Print()
 		return fmt.Errorf("error running Python code")
