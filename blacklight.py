@@ -146,21 +146,18 @@ def extract_zip(zip_path: str, destination: str) -> None:
             shutil.rmtree(temp_extract_dir)
 
 
-def install_software(name: str, version: str, url: str, dependencies: List[str] = None) -> None:
-    if dependencies is None:
-        dependencies = []
-
-    target_dir = Path(f"{name}-{version}")
+def install_software(app: App) -> None:
+    target_dir = Path(f"{app.name}-{app.version}")
 
     if target_dir.exists():
-        raise FileExistsError(f"App {name}-{version} already installed")
+        raise FileExistsError(f"App {app.name}-{app.version} already installed")
 
     with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as tmp_file:
         tmp_path = tmp_file.name
 
     try:
-        print(f"Downloading {name} {version}...")
-        download_file(url, tmp_path)
+        print(f"Downloading {app.name} {app.version}...")
+        download_file(app.url, tmp_path)
 
         print(f"Extracting to {target_dir}...")
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -170,12 +167,12 @@ def install_software(name: str, version: str, url: str, dependencies: List[str] 
         print(f"Creating virtual environment folder...")
         venv_path.mkdir(parents=True, exist_ok=True)
 
-        if dependencies:
-            deps_json = json.dumps(dependencies)
+        if app.dependencies:
+            deps_json = json.dumps(app.dependencies)
             print(f"Installing dependencies: {deps_json}")
             installer.install_dependencies(deps_json, str(venv_path))
 
-        print(f"Successfully installed {name} {version}")
+        print(f"Successfully installed {app.name} {app.version}")
 
     finally:
         if Path(tmp_path).exists():
