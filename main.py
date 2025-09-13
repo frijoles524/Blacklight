@@ -1,6 +1,13 @@
 from blacklight import load_apps, install_software, run_software
+from blacklight.venv_handler.piputil import install_pip
+from blacklight.venv_handler.installer import install_dependency_global
 
+# Normal startup sequence. install_pip only runs when pip is not detected
 store = load_apps("lists")
+install_pip()
+# Requiring global dependencies is also possible
+install_dependency_global("pyqt5")
+install_dependency_global("QScintilla")
 
 app_name = "scratchpad"
 latest_version = store.get_latest_version(app_name)

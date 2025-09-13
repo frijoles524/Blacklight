@@ -8,8 +8,8 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
-from venv_handler import installer
-from venv_handler import loader
+from .venv_handler import installer
+from .venv_handler import loader
 
 class App:
     def __init__(self, name: str, version: str, url: str, entrypoint: str, dependencies: List[str]):
@@ -224,3 +224,6 @@ def run_software(name: str, version: str, store: AppStore) -> None:
 
     finally:
         loader.unload_site_packages(str(venv_path))
+
+# activate global env on import
+loader.load_site_packages(installer.get_global_env())
