@@ -1,0 +1,7 @@
+{
+  "name": "scratchpad",
+  "version": "1.6.0",
+  "url": "https://github.com/ravendevteam/scratchpad/archive/refs/tags/v1.6.0.zip",
+  "entrypoint": "scratchpad.py",
+  "dependencies": ["requests==2.32.3", "validators==0.34.0", "chardet==5.2.0", "PyQt5==5.15.11", "QScintilla==2.14.1"]
+}

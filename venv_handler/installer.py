@@ -1,4 +1,5 @@
 import json
+import importlib.util
 from pip._internal import main as pip_main
 
 def install_dependencies(json_str, target_dir):
@@ -11,6 +12,10 @@ def install_dependencies(json_str, target_dir):
     for dep in data:
         dep = dep.strip()
         if dep and dep not in installed:
+            spec = importlib.util.find_spec(dep)
+            if spec is not None:
+                print(f"Global installation found for {dep}. Skipping...")
+                continue
             print(f"Installing {dep} into {target_dir}...")
             result = pip_main([
                 "install",

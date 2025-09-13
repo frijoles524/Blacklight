@@ -104,6 +104,13 @@ def load_apps(directory: str) -> AppStore:
             apps = [data] if isinstance(data, dict) else data
             for app_data in apps:
                 app = App.from_dict(app_data)
+                if app.name in store.apps:
+                    original_name = app.name
+                    app.name = f"{app.name}_{json_file.stem}"
+                    if app.name in store.apps:
+                        print(f"Duplicate app detected. {original_name} from {json_file.stem} has been skipped.", file=sys.stderr)
+                        continue
+                    print(f"Duplicate app detected. Renamed {original_name} {app.version} to {app.name}", file=sys.stderr)
                 store.apps.setdefault(app.name, {})[app.version] = app
 
         except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:

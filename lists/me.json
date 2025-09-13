@@ -1,7 +1,0 @@
-{
-  "name": "my_app",
-  "version": "1.0.0",
-  "url": "https://drive.google.com/uc?export=download&id=1h7vi6s74j27PM-WFXeQ4Q1Hkb8n_0ays",
-  "entrypoint": "main.py",
-  "dependencies": ["requests"]
-}
