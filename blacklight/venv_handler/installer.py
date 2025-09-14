@@ -1,7 +1,7 @@
 import os
 import re
 import json
-from pip._internal import main as pip_main
+from pip._internal.cli.main import main as _pip_main
 from importlib.metadata import distribution, PackageNotFoundError
 
 def get_global_env():
@@ -29,7 +29,7 @@ def install_dependencies(json_str, target_dir):
                 installed.add(dep)
                 continue
             print(f"Installing {dep} into {target_dir}...")
-            result = pip_main([
+            result = _pip_main([
                 "install",
                 "--target", target_dir,
                 dep, "--prefer-binary"
@@ -45,7 +45,7 @@ def install_dependency_global(dep):
             print(f"{dep} installed. Aborting installation.")
             return
         print(f"Installing global {dep}")
-        result = pip_main([
+        result = _pip_main([
             "install",
             "--target", get_global_env(),
             dep, "--prefer-binary"
