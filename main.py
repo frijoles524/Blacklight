@@ -18,4 +18,4 @@ app = store.get_app(app_name, latest_version)
 
 install_software(app)
 
-run_software(app.name, app.version, store)
+run_software(store, app)
