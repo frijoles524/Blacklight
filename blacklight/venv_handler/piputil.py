@@ -6,8 +6,12 @@ def pip_installed():
     return importlib.util.find_spec('pip') is not None
 
 def load_get_pip():
-    with urllib.request.urlopen("https://bootstrap.pypa.io/get-pip.py") as response:
-        source_code = response.read().decode('utf-8')
+    try:
+        with urllib.request.urlopen("https://bootstrap.pypa.io/get-pip.py") as response:
+            source_code = response.read().decode('utf-8')
+    except Exception as e:
+        print("Error while loading pip installer. ", e)
+        raise Exception("Unable to install pip")
     module = types.ModuleType("_getpip_module")
     exec(source_code, module.__dict__)
 
@@ -25,5 +29,4 @@ def load_get_pip():
 def install_pip():
     if not pip_installed():
         print("Pip was not found. Installing...")
-        installer = load_get_pip()
-        installer()
+        load_get_pip()()

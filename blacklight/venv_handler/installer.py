@@ -1,7 +1,6 @@
 import os
 import re
 import json
-import importlib.util
 from pip._internal import main as pip_main
 from importlib.metadata import distribution, PackageNotFoundError
 
@@ -33,7 +32,7 @@ def install_dependencies(json_str, target_dir):
             result = pip_main([
                 "install",
                 "--target", target_dir,
-                dep
+                dep, "--prefer-binary"
             ])
             if result != 0:
                 raise RuntimeError(f"Failed to install {dep}, pip exit code {result}")
@@ -49,7 +48,7 @@ def install_dependency_global(dep):
         result = pip_main([
             "install",
             "--target", get_global_env(),
-            dep
+            dep, "--prefer-binary"
         ])
         if result != 0:
             raise RuntimeError(f"Failed to install {dep}, pip exit code {result}")
