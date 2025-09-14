@@ -185,15 +185,15 @@ def install_software(app: App) -> None:
         if Path(tmp_path).exists():
             os.unlink(tmp_path)
 
-def run_software(name: str, version: str, store: AppStore) -> None:
-    target_dir = Path(f"{name}-{version}")
+def run_software(store: AppStore, app: App) -> None:
+    target_dir = Path(f"{app.name}-{app.version}")
 
     if not target_dir.exists():
-        raise FileNotFoundError(f"App {name}-{version} not installed")
+        raise FileNotFoundError(f"App {app.name}-{app.version} not installed")
 
-    entrypoint = store.get_entrypoint(name, version)
+    entrypoint = store.get_entrypoint(app.name, app.version)
     if not entrypoint:
-        raise ValueError(f"No entrypoint found for {name} {version}")
+        raise ValueError(f"No entrypoint found for {app.name} {app.version}")
 
     venv_path = target_dir / ".blacklight"
     entrypoint_path = target_dir / entrypoint
@@ -204,7 +204,7 @@ def run_software(name: str, version: str, store: AppStore) -> None:
     try:
         loader.load_site_packages(str(venv_path))
 
-        print(f"Running {name} {version}...")
+        print(f"Running {app.name} {app.version}...")
 
         with open(entrypoint_path, 'r', encoding='utf-8') as f:
             code = f.read()
