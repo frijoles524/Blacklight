@@ -5,7 +5,8 @@ from blacklight.venv_handler.installer import install_dependency_global
 # Normal startup sequence. install_pip only runs when pip is not detected
 store = load_apps("lists")
 install_pip()
-# Requiring global dependencies is also possible
+# Requiring global dependencies is also possible. 
+# some modules like QScintilla install pyqt5 or other requirements, which inflates the size of each app by upwards of 100mb
 install_dependency_global("pyqt5")
 install_dependency_global("QScintilla")
 
