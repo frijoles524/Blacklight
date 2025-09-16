@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from .venv_handler import installer
 from .venv_handler import loader
+from runpy import run_path
 
 class App:
     def __init__(self, name: str, version: str, url: str, entrypoint: str, dependencies: List[str]):
@@ -206,22 +207,13 @@ def run_software(store: AppStore, app: App) -> None:
 
         print(f"Running {app.name} {app.version}...")
 
-        with open(entrypoint_path, 'r', encoding='utf-8') as f:
-            code = f.read()
-
-        globals_dict = {
-            '__name__': '__main__',
-            '__file__': str(entrypoint_path),
-        }
-
         original_path = sys.path.copy()
         sys.path.insert(0, str(target_dir))
 
         try:
-            exec(code, globals_dict)
+            run_path(str(entrypoint_path), run_name="__main__")
         finally:
             sys.path = original_path
-
     finally:
         loader.unload_site_packages(str(venv_path))
 
