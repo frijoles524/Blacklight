@@ -10,11 +10,10 @@ def load_site_packages(path: str):
 
 def unload_site_packages(path: str):
     abs_path = str(Path(path).resolve())
-    if abs_path in sys.path:
-        sys.path = [p for p in sys.path if p != abs_path]
+    sys.path = [str(Path(p).resolve()) for p in sys.path if str(Path(p).resolve()) != abs_path]
     to_delete = [
         name for name, module in sys.modules.items()
-        if getattr(module, "__file__", None) and abs_path in str(module.__file__)
+        if getattr(module, "__file__", None) and Path(module.__file__).resolve().is_relative_to(abs_path)
     ]
     for name in to_delete:
         del sys.modules[name]
