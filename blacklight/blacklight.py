@@ -7,7 +7,7 @@ import zipfile
 import urllib.request
 import urllib.error
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 from .venv_handler import installer
 from .venv_handler import loader
 
