@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blacklight"
+version = "0.1.0"
+authors = [
+    { name = "frijoles524", email = "n3039300@gmail.com" }
+]
+description = "A pure python package management utility"
+readme = "README.md"
+requires-python = ">=3.12.4"
