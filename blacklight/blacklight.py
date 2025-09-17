@@ -218,4 +218,7 @@ def run_software(store: AppStore, app: App) -> None:
         loader.unload_site_packages(str(venv_path))
 
 # activate global env on import
-loader.load_site_packages(installer.get_global_env())
+dotblcklight = installer.get_global_env()
+if not os.path.exists(dotblcklight):
+    os.mkdir(dotblcklight)
+loader.load_site_packages(dotblcklight)
