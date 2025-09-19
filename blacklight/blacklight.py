@@ -51,8 +51,9 @@ class App:
 class AppStore:
     def __init__(self):
         self.apps: Dict[str, Dict[str, App]] = {}
-
+    
     def get_latest_version(self, name: str) -> str:
+        """Get the latest version of the specified app"""
         if name not in self.apps or not self.apps[name]:
             raise ValueError(f"No versions found for app: {name}")
 
@@ -94,6 +95,7 @@ class AppStore:
 
 
 def load_apps(directory: str) -> AppStore:
+    """Load repository files from the given directory"""
     store = AppStore()
     json_files = Path(directory).glob("*.json")
 
@@ -155,6 +157,7 @@ def extract_zip(zip_path: str, destination: str) -> None:
 
 
 def install_software(app: App) -> None:
+    """Install the app to your disk"""
     target_dir = Path(f"{app.name}-{app.version}")
 
     if target_dir.exists():
@@ -187,6 +190,7 @@ def install_software(app: App) -> None:
             os.unlink(tmp_path)
 
 def run_software(store: AppStore, app: App) -> None:
+    """Run the app if it is installed"""
     target_dir = Path(f"{app.name}-{app.version}")
 
     if not target_dir.exists():
