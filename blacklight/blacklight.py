@@ -95,11 +95,11 @@ class AppStore:
 
 
 def load_apps(directory: str) -> AppStore:
-    """Load repository files from the given directory"""
+    """Load repository files from the given directory or just one file"""
     store = AppStore()
     json_files = Path(directory).glob("*.json")
 
-    for json_file in json_files:
+    def load_from_file():
         try:
             with open(json_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -118,10 +118,13 @@ def load_apps(directory: str) -> AppStore:
 
         except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
             print(f"Error loading {json_file}: {e}", file=sys.stderr)
-            continue
 
+    if os.path.isdir(directory):
+        for json_file in json_files:
+            load_from_file(json_file)
+    else:
+        load_from_file(directory)
     return store
-
 
 def download_file(url: str, destination: str) -> None:
     try:
