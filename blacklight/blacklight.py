@@ -99,7 +99,7 @@ def load_apps(directory: str) -> AppStore:
     store = AppStore()
     json_files = Path(directory).glob("*.json")
 
-    def load_from_file():
+    def load_from_file(json_file):
         try:
             with open(json_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -178,7 +178,6 @@ def install_software(app: App) -> None:
         extract_zip(tmp_path, str(target_dir))
 
         venv_path = target_dir / ".blacklight"
-        print(f"Creating virtual environment folder...")
         venv_path.mkdir(parents=True, exist_ok=True)
 
         if app.dependencies:
